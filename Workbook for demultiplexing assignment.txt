@@ -23,3 +23,6 @@ adapted from ps9
 Made a slurm script
 when working with gzip.open, the normal 'r' mode returns binary. have to use 'tr' to get actual values
 had to specify 'python' before the filename in my slurm script
+I realized that hardcoding the qscores list length isn't good for the index reads, made it dynamically calculate
+list length based on length of 1st qscore line encountered. I also made it dynamically calculate total number of records
+for more broad applicability
