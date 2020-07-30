@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --account=bgmp
+#SBATCH --partition=bgmp
+#SBATCH --job-name=DG_demult_part1
+#SBATCH --output=demult.out
+#SBATCH --error=demult.err
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=12:00:00
+#SBATCH --cpus-per-task=1
+
+conda activate bgmp_py37
+
+/usr/bin/time -v python /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/part1.py -i /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R1_001.fastq.gz -o read1
