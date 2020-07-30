@@ -1,4 +1,4 @@
-#!/usr/ bin/env python
+#!/usr/bin/env python
 
 import gzip.open 
 import arparse
@@ -13,11 +13,13 @@ args = parser.parse_args()
 
 
 num_reads = 363246735
-qscores_array =  np.zeros((101, num_reads))
+qscores_array =  []
+for x in range(101):
+    qscores_array.append(0)
 
 
 ln = 0
-with open(input_file, 'r') as fh:
+with open(input_file, 'tr') as fh:
     for line in fh:
         if ln % 4 == 3:
             line = line.strip()
@@ -27,15 +29,17 @@ with open(input_file, 'r') as fh:
                 #convert qscore ascii to int
                 phred_score = ord(letter)-33
                 #which record we're on
-                record = ((ln+1) // 4) -1
+                #record = ((ln+1) // 4) -1
                 #add phredscore to 2d array
-                qscores_array[nucleotide_pos][record] = phred_score
+                qscores_array[nucleotide_pos] = phred_score
                 nucleotide_pos += 1
         ln += 1
 
 
 #calculating mean
-means = np.mean(qscores_array, axis=1)
+means = []
+for item in qscores_array:
+    means.append(item / num_reads)
 
 
 #plotting
