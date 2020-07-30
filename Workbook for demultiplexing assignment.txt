@@ -1,0 +1,25 @@
+Workbook for demultiplexing assignment
+working on Talapas
+data directory: /projects/bgmp/shared/2017_sequencing
+personal working dir: /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing
+
+7-29-20
+
+peaked at input fastQ files to see which was the index vs read based on seq length
+Filename	Contents	Readcount
+1294_S1_L008_R1_001.fastq.gz	Read1	
+1294_S1_L008_R2_001.fastq.gz	Index1
+1294_S1_L008_R3_001.fastq.gz	Index2
+1294_S1_L008_R4_001.fastq.gz	Read2
+Have to calculate # of reads for input into mean calculator
+got wc -l for read files, took forever 
+1452986940 / 4 = 363,246,735
+
+drafted python script to calculate mean qscores at each position
+adapted from ps9
+
+7-30-20
+
+Made a slurm script
+when working with gzip.open, the normal 'r' mode returns binary. have to use 'tr' to get actual values
+had to specify 'python' before the filename in my slurm script

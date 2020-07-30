@@ -1,0 +1,84 @@
+Load modules to work with zipped files
+Load module to build combinations (itertools)
+
+
+either hardcode the indeces in a list, or else read them from
+a file into a list
+'index_list'
+
+initialize a two dimensional list. one axis will be for each
+of the files input (4 fastq files) and one axis will be for
+each of the 4 lines in a single fastq record. The result will
+be a 4x4 dataset: 4 records of 4 lines.
+'records'
+
+
+store a list of the input files in a list, maybe as an input option
+during runtime
+'file_list'
+
+
+define and accept user arguments. This will include the directory containing the input FASTQ files
+and may incldue the file with all indeces. It may also include some quality of life options for output file naming.
+
+
+def index_combiner(index_list):
+    '''A function that will generate a list of combinations
+    for a given list of sequencing indexes'''
+    generate a list of index combinations using the itertools combination function
+    add the concatenated indexes as a key in a dictionary 'index_combinations' /
+        Initialize the value of the dictionary to 0 for recording appearances later
+    add one more key for unrecognizeable indeces (low qscore, called N, etc)
+    return index_combinations
+
+
+def file_reader(file_list, index_combinations):
+    '''a function that will read the input FASTQ files simultaneously, looking 
+    at one record at a time. The records from the two index reads will be compared
+    to check for index hopping and low quality indeces. The records for the two reads
+    will have the header modified to include the information from the indeces. The reads
+    will then be sorted into separate FASTQ output files based on their indeces and read number 
+    (read 1 will be separate from read 2). Paired indeces will be in a file together with 
+    all the reads with the same indeces, while mismatched indeces will be grouped together. 
+    All reads with unknown or low quality indeces will be put in a FASTQ file together. 
+    Total expected count of output files will be two times the number of indeces (one file for
+    each read, 'forward' and 'reverse'), plus two files for reads with mismatched indeces (again, one for 
+    'forward and 'reverse'), plus two files for unknown or low quality indexed reads.'''
+    
+    open the four input files (Index 1 and 2, reads 1 and 2)
+    Iterate through each line of each file one at a time, not moving to the next line until \
+        every file is at the same line. Store the lines in the 2d 'records' list intiialized earlier
+    once 4 lines of every file have been stored in the records list (indicating a comlete FASTQ record):
+        grab the index sequence from the two index records. concatenate them into one string
+        add that string to the end of the header line for the two read records.
+
+        check the qscores of the indeces (from the 4th line). If the mean qscore falls below the \
+        established qscore cutoff:
+            then put these records in the low quality output files. separate the 'forward' and 'reverse' reads
+            into their own output files
+
+            add 1 to the counter for appearances of unknown indeces in the index_combinations dict generated earlier
+        else, if the qscores exceed the cutoff threshold:
+            look at the sequences of the indeces (line 2). If they contain an 'N' for unknown base:
+                put these records in the low quality output files
+                add 1 to the counter for appearances of unknown indeces in the index)combinations dict
+            else, if they don't contain an 'N':
+                compare the sequences of the two indeces. If they are identical:
+                    the indeces are paired! add the records in the fastq outputs for this index pair (two files, forward and reverse).
+                    add one to the counter for this index pair in index_combinations
+                else, if the index sequences don't match:
+                    add the records to the mismatched fastq output files
+                    add one to the counter for this index pair in index_combinations
+    return(index_combinations)
+    #note that this function will also 'return' many output files to the directory
+
+def frequencies(index_combinations):
+    '''Function that reports the frequency of appearances for every
+    index combination. Results are stored in a tsv output file with
+    the index combination and the count of appearances'''
+    iterate through the items in the index_combinations dictionary
+        #each key represents an index combination, and each value is the count of appearances
+        write the combination and count to an output file. separate the values with a tab
+
+
+
