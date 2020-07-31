@@ -26,3 +26,23 @@ had to specify 'python' before the filename in my slurm script
 I realized that hardcoding the qscores list length isn't good for the index reads, made it dynamically calculate
 list length based on length of 1st qscore line encountered. I also made it dynamically calculate total number of records
 for more broad applicability
+
+finished read1. Runtime stats:
+Command being timed: "python /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/part1.py -i /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R1_001.fastq.gz -o read1"
+User time (seconds): 11955.64
+System time (seconds): 3.85
+Percent of CPU this job got: 98%
+Elapsed (wall clock) time (h:mm:ss or m:ss): 3:22:22
+Maximum resident set size (kbytes): 59876
+
+indeces stats
+Command being timed: "python /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/part1.py -i /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R2_001.fastq.gz -o index1"
+        User time (seconds): 955.73
+        System time (seconds): 0.69
+        Percent of CPU this job got: 99%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 16:02.72
+        Maximum resident set size (kbytes): 58776
+
+        
+counted all reads with 'N' in the indeces
+zcat /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R2_001.fastq.gz /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R3_001.fastq.gz | awk 'NR % 4 == 2' | grep 'N' -c
