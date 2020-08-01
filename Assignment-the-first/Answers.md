@@ -28,7 +28,9 @@
     
     ![Index 2](https://github.com/2020-bgmp/demultiplexing-derrik-gratz/blob/master/Assignment-the-first/index2.png)  
     
-    2. ```Your answer here```
+    2. Based on a 2016 paper by Wright and Vetsigian, a quality score cutoff of 26 for index reads was the best tradeoff for maintaining correct reads and removing invalid reads. This value may vary per individual dataset, and they suggest a way of emperically finding the best value for your own dataset based on the number of reads and the number of mis-assignments, but I probably won't perform that on this data set as that would require all the data to be read multiple times. 
+    >Wright, E.S., Vetsigian, K.H. Quality filtering of Illumina index reads mitigates sample cross-talk. BMC Genomics 17, 876 (2016). https://doi.org/10.1186/s12864-016-3217-x
+   
     3. ```zcat /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R2_001.fastq.gz /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R3_001.fastq.gz | awk 'NR % 4 == 2' | grep 'N' -c```
     
     7304664
