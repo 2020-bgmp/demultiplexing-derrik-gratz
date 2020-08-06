@@ -46,3 +46,69 @@ Command being timed: "python /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/
         
 counted all reads with 'N' in the indeces
 zcat /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R2_001.fastq.gz /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R3_001.fastq.gz | awk 'NR % 4 == 2' | grep 'N' -c
+
+8/3/20
+
+unix command for test files
+python demultiplexing.py -f /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/TEST-input_FASTQ/ -x /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/TEST-input_FASTQ/indexes.txt -o /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/TEST-output_FASTQ/
+
+Unit tests:
+passed in actual index file. 24 indices in file. 
+Expecting 24 indices read (ignoring top column)
+got 24 indices in list
+
+making permutations
+Expecting 576 permutations of those indices
+ran test, the dictionary of permutations had 576 elements :)
+
+open input files returns dictionary with 4 items, one for each input file
+
+8/4/20
+
+output file opener should open 52 files, 2 for each index, 2 for mismatched, and 2 for unknown reads.
+52 files are in the test output folder
+
+passed in 4 reads with Ns in indices, evaluate_reads correctly identified them as 'unknown'
+a read with really poor qscores was identified as 'unknown'
+
+8/5/20
+made new argparse to accept directions to each input file, not just the parent directory
+added runtime option for output file format
+new command for testing
+python demultiplexing.py -r /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/TEST-input_FASTQ/test_R1.fastq.gz -R /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/TEST-input_FASTQ/test_R4.fastq.gz -i /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/TEST-input_FASTQ/test_R2.fastq.gz -I /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/TEST-input_FASTQ/test_R3.fastq.gz -x /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/TEST-input_FASTQ/indexes.txt -o /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/TEST-output_FASTQ/ -f test_out
+need to check that program is getting reverse compliment of reads
+input :
+        index 1 = ACTTCGAC
+        qscore  = AAA<FJJJ
+        index 2 = GTCGAAGT                                                                            +
+        qscore 2= AAAAAJJF
+expected output:
+        evaluate_reads returns 'paired'
+        since indices aren't in the index file, they should get put in the undetermined files
+performing as expected
+
+full  command for actual data
+python ./demultiplexing.py -r /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R1_001.fastq.gz -i /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R2_001.fastq.gz -I /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R3_001.fastq.gz -R /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R4_001.fastq.gz -x /projects/bgmp/shared/2017_sequencing/indexes.txt -o /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/Assignment-the-third/output/ -f 1294_S1_L008 -q 26
+
+full slurm script
+#!/bin/bash
+#SBATCH --account=bgmp
+#SBATCH --partition=bgmp
+#SBATCH --job-name=DG_demult_part3
+#SBATCH --output=demult_part3.out
+#SBATCH --error=demult_part3.err
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=24:00:00
+#SBATCH --cpus-per-task=1
+
+conda activate bgmp_py37
+
+/usr/bin/time -v python /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/Assignment-the-third/demultiplexing.py -r /projects/bgmp/shared/2017_sequencin$
+/usr/bin/time -v gzip /projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiple$
+
+
+trying to gzip output files within slurm script, we'll see how that goes
+
+submitted slurm script
+Submitted batch job 12663470
