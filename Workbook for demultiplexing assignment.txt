@@ -112,3 +112,57 @@ trying to gzip output files within slurm script, we'll see how that goes
 
 submitted slurm script
 Submitted batch job 12663470
+
+8/6/20
+
+full run stats from script
+Total records for index pair category:
+undetermined    28433118        %7.827494443962449
+misindexed      12985206        %3.574761931445853
+paired  321828411       %88.5977436245917
+
+Total number of records 363246735
+
+runtime stats
+User time (seconds): 10686.03
+        System time (seconds): 68.68
+        Percent of CPU this job got: 99%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 3:00:40
+        Maximum resident set size (kbytes): 240208
+
+running again with q cutoff of 30 to compare results
+job ID 12665623
+
+I noticed there were way too many lines in the output stats
+changed it so only paired and index hopped counts are reported, not unknown counts
+
+new job id 12665627
+
+Still getting high % misindexed. troubleshooting
+I realized that I was putting all complete, mis-matched indices in the 'hopped' category. I had assumed that if it passed qscore check and 
+had no unknown basepairs that it was either paired or hopped at that point. I didn't consider that I should check that the two
+indices are actually present in the input indices file. reruning
+
+job id 12669587
+
+stats output
+Total records for index pair category:
+undetermined    57748853        %15.897968910856141
+misindexed      517612  %0.1424959814160477
+paired  304980270       %83.95953510772782
+
+Total number of records 363246735
+
+runtime stats
+User time (seconds): 6475.23
+        System time (seconds): 70.85
+        Percent of CPU this job got: 98%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 1:50:13
+        Maximum resident set size (kbytes): 126420
+
+zipping stats
+User time (seconds): 19254.06
+        System time (seconds): 81.64
+        Percent of CPU this job got: 99%
+        Elapsed (wall clock) time (h:mm:ss or m:ss): 5:23:31
+        Maximum resident set size (kbytes): 900

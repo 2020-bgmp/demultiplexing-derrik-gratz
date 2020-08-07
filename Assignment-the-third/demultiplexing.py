@@ -11,9 +11,9 @@ def get_args():
     parser = argparse.ArgumentParser(description='\
     This program demultiplexes sequencing data generated with parallel runs. Indices for records\
     are checked for congruence. Records with mismatched indices are set aside. Records with low quality\
-    indices (based on qscores) or unknown indices (with N base calls) are set aside. Must specify FASTQ\
-    file directory (not individual FASTQ files). All files ending with "fastq.gzip" from that directory will be examined.\
-    Reads are assumed to be Ascii base 33. Assumed to be paired end reads with dual indexing')
+    indices (based on qscores) or unknown indices (with N base calls) are set aside in the "unknown" output files.\
+    Records with indices not in the expected list of indices are set in the unknown outputs. Must specify which\
+    read each FASTQ file is. Read quality scores are assumed to be Ascii base 33. Assumed to be paired end reads with dual indexing')
     parser.add_argument('-r', '--read_one', type=str, help='file containing first read. FASTQ gzipped format.')
     parser.add_argument('-R', '--read_two', type=str, help='file containing second read. FASTQ gzipped format.')
     parser.add_argument('-i', '--index_one', type=str, help='file contaiing first index. FASTQ gzipped format.')
@@ -21,7 +21,7 @@ def get_args():
     parser.add_argument('-o', '--output_directory', type=str, help='Specify output directory name')
     parser.add_argument('-q', '--qscore_cutoff', type=int, help='Define qscore cutoff. Indices with a mean qscore below the threshold. Defaults to 26',default=26)
     parser.add_argument('-x', '--indices', type=str, help='file with all expected indices. 4 column TSV format with indices in 4th column')
-    parser.add_argument('-f', '--output_format', type=str, help='Filename base for demultiplexed FASTQ files.')
+    parser.add_argument('-f', '--output_format', type=str, help='Filename base for demultiplexed FASTQ files. Each file will have this information + index information')
     args = parser.parse_args()
     return args.output_directory, args.read_one, args.read_two, args.index_one, args.index_two, args.qscore_cutoff, args.indices, args.output_format
 output_dir, read_one_file, read_two_file, index_one_file, index_two_file, qscore_cutoff, indices_file, output_format = get_args()
@@ -135,6 +135,10 @@ output_files_for, output_files_rev = open_outputs(output_format, output_dir, ind
 
 
 def evaluate_record(record, qscore_cutoff):
+    '''
+    input: full record from 4 files (4x4 list)
+           qscore threshold for cutoff
+    output: whether the read is paired, index-hopped, or unknown'''
     read1 = record[0]
     index1 = record[1]
     index2 = record[2]
@@ -164,9 +168,12 @@ def evaluate_record(record, qscore_cutoff):
         if avg_phred < qscore_cutoff:
             return 'undetermined'
         count = 1
-    #if the qsores were acceptable, proceed to check for mismatches in indices
     #gets reverse complement of second index
     index2_rev_comp = rev_comp(index2[1])
+    #check if the indices are actually in the expected indices file
+    if index1[1] not in indices or index2_rev_comp not in indices:
+        return 'undetermined'
+    #if the qsores were acceptable, proceed to check for mismatches in indices
     for pos in range(len(index1[1])):
         #go through bp by bp, comparing to make sure they're the same
         if index1[1][pos] != index2_rev_comp[pos]:
@@ -182,6 +189,13 @@ index_hoping_counts = {'undetermined':0,'misindexed':0,'paired':0}
 
 
 def write_output(record, evaluation, output_files_for, output_files_rev, index_subs):
+    '''
+    input: 4x4 list of records
+        evaluation of index pairs
+        files to write out to
+        indices information
+    output:
+        write the record to the corresponding output files (2)'''
     read1 = record[0]
     index1 = record[1]
     index2 = record[2]
@@ -192,10 +206,11 @@ def write_output(record, evaluation, output_files_for, output_files_rev, index_s
     read1[0] += ' ' + indices
     read2[0] += ' ' + indices
     #count records per index pair
-    if indices in index_counts.keys():
-        index_counts[indices] += 1
-    else:
-        index_counts[indices] = 1
+    if evaluation != 'undetermined':
+        if indices in index_counts.keys():
+            index_counts[indices] += 1
+        else:
+            index_counts[indices] = 1
     index_hoping_counts[evaluation] += 1
     count = 0
     #adding newlines back
@@ -251,6 +266,7 @@ file_reader(input_files, index_combos, qscore_cutoff, output_files_for, output_f
 
 
 def file_closer(input_files, output_files_for, output_files_rev):
+    '''close all open input and output files'''
     for key in input_files:
         input_files[key].close()
     for file in output_files_for.keys():
@@ -261,6 +277,7 @@ file_closer(input_files, output_files_for, output_files_rev)
 
 
 def stats(output_dir):
+    '''report run statistics. A full record of index pair counts is stored in a stats.txt file'''
     os.chdir(output_dir)
     with open('stats.txt', 'w') as fh:
         print('Total records for index pair category:')
@@ -272,12 +289,13 @@ def stats(output_dir):
             fh.write(line)
         print()
         fh.write('\n')
-        line = 'Total number of records\t' + str(sum(index_counts.values()))+'\n'
+        line = 'Total number of records\t' + str(sum(index_hoping_counts.values()))+'\n'
         print(line)
         fh.write(line)
         print('See stats.txt in the output directory for full run stats')
         fh.write('Frequencies of each index pair:\n')
-        for item in index_counts.keys():
+        sorted_counts = {k:v for k,v in sorted(index_counts.items(),key=lambda item: item[1], reverse=True)}
+        for item in sorted_counts.keys():
             percentage = (index_counts[item] / sum(index_counts.values())) * 100
             line = item+'\t'+str(index_counts[item])+'\t%'+str(percentage)+'\n'
             fh.write(line)
