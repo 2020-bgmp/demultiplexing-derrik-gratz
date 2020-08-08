@@ -72,6 +72,7 @@ def index_combiner(indices):
     '''
     Input: list of indeces
     Output: dictionary with all possible index combinations as the keys and a running counter as the value'''
+    #gives tuples of combos
     combos = itertools.product(indices, indices)
     formated_combos = []
     for index1, index2 in combos:
@@ -298,11 +299,5 @@ def stats(output_dir):
         for item in sorted_counts.keys():
             percentage = (index_counts[item] / sum(index_counts.values())) * 100
             line = item+'\t'+str(index_counts[item])+'\t%'+str(percentage)+'\n'
-            fh.write(line)
-            
+            fh.write(line)          
 stats(output_dir)
-
-
-
-
-
