@@ -166,3 +166,14 @@ User time (seconds): 19254.06
         Percent of CPU this job got: 99%
         Elapsed (wall clock) time (h:mm:ss or m:ss): 5:23:31
         Maximum resident set size (kbytes): 900
+
+submitting one more time with my desired qscore of 26
+batch job 12671811
+
+Looking like reasonable outputs
+Total records for index pair category:
+undetermined	40846593	%11.244861705363986
+misindexed	595645	%0.16397807402178027
+paired	321804497	%88.59116022061423
+
+rerunning one more time to clean up output file, but script itself is working fine :)

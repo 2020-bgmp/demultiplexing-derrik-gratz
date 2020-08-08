@@ -281,8 +281,15 @@ def stats(output_dir):
     '''report run statistics. A full record of index pair counts is stored in a stats.txt file'''
     os.chdir(output_dir)
     with open('stats.txt', 'w') as fh:
+        fh.write('Run information:\nInputs:\n')
+        fh.write(str('Read 1 file:\t' + read_one_file + '\n'))
+        fh.write(str('Read 2 file:\t' + read_two_file + '\n'))
+        fh.write(str('Index 1 file:\t' + index_one_file + '\n'))
+        fh.write(str('Index 2 file:\t' + index_two_file + '\n'))
+        fh.write(str('Expected indices file' + indices_file + '\n'))
+        fh.write(str('Qscore threshold:\t' + qscore_cutoff + '\n'))
+        fh.write(str('Total records for index pair category:\n'))
         print('Total records for index pair category:')
-        fh.write('Total records for index pair category:\n')
         for item in index_hoping_counts.keys():
             percentage = (index_hoping_counts[item] / sum(index_hoping_counts.values())) * 100
             line = item+'\t'+str(index_hoping_counts[item])+'\t%'+str(percentage)+'\n'
@@ -293,6 +300,8 @@ def stats(output_dir):
         line = 'Total number of records\t' + str(sum(index_hoping_counts.values()))+'\n'
         print(line)
         fh.write(line)
+        line = 'Full FASTQ output files can be found on Talapas at\n' + output_dir
+        fh.write()
         print('See stats.txt in the output directory for full run stats')
         fh.write('Frequencies of each index pair:\n')
         sorted_counts = {k:v for k,v in sorted(index_counts.items(),key=lambda item: item[1], reverse=True)}
