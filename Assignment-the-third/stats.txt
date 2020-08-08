@@ -1,7 +1,18 @@
+Run information:
+Inputs:
+Read 1 file:    /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R1_001.fastq.gz
+Read 2 file:    /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R4_001.fastq.gz
+Index 1 file:   /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R2_001.fastq.gz
+Index 2 file:   /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R3_001.fastq.gz
+Expected indices file/projects/bgmp/shared/2017_sequencing/indexes.txt
+'Qscore threshold:  26
 Total records for index pair category:
 undetermined	40846593	%11.244861705363986
 misindexed	595645	%0.16397807402178027
 paired	321804497	%88.59116022061423
+
+Full FASTQ output files can be found on Talapas at
+/projects/bgmp/dgratz/bioinfo/Bi622/demultiplexing/demultiplexing-derrik-gratz/Assignment-the-third/output
 
 Total number of records	363246735
 Frequencies of each index pair:
